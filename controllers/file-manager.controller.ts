@@ -131,7 +131,7 @@ export const deleteFilePatch = (req: Request, res: Response) => {
 
 export const createFolderPost = (req: Request, res: Response) => {
   try {
-    const { folderName } = req.body;
+    const { folderName, folderPath } = req.body;
 
     if(!folderName && typeof folderName !== "string") {
       res.json({
@@ -142,9 +142,9 @@ export const createFolderPost = (req: Request, res: Response) => {
     }
 
     const mediaRoot = path.join(__dirname, "..", "media");
-    const folderPath = path.join(mediaRoot, folderName);
+    const targetPath = path.join(mediaRoot, folderPath || "", folderName);
 
-    if(fs.existsSync(folderPath)) {
+    if(fs.existsSync(targetPath)) {
       res.json({
         code: "error",
         message: "Folder đã tồn tại!"
@@ -153,7 +153,7 @@ export const createFolderPost = (req: Request, res: Response) => {
     }
 
     // Tạo folder
-    fs.mkdirSync(folderPath);
+    fs.mkdirSync(targetPath);
 
     res.json({
       code: "success",
@@ -172,7 +172,7 @@ export const listFolder = (req: Request, res: Response) => {
     // const mediaPath = path.join(__dirname, "..", "media");
     let mediaPath = path.join(__dirname, "..", "media");
 
-    if(req.query.folderPath) {
+    if(req.query.folderPath != "undefined") {
       mediaPath = path.join(mediaPath, `${req.query.folderPath}`);
     }
 
